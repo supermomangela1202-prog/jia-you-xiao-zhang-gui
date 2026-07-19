@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="家有小掌柜">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌞</text></svg>">
+<title>家有小掌柜 · 三孩家庭成长积分平台</title>
+<style>
+  :root{
+    --sun:#FFC93C; --ocean:#2E86AB; --ocean2:#4FB0C6; --coral:#FF7B6B;
+    --green:#5FBF73; --bg:#FFF8EC; --card:#FFFFFF; --ink:#2B2B33; --muted:#8A8A99;
+    --line:#EFE7D6; --dajie:#FF7B6B; --erbao:#4FB0C6; --sanbao:#5FBF73;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;padding-bottom:40px}
+  header{background:linear-gradient(135deg,var(--sun),var(--coral));color:#fff;
+    padding:22px 20px;box-shadow:0 4px 18px rgba(255,123,107,.25)}
+  header h1{font-size:22px;display:flex;align-items:center;gap:10px}
+  header p{opacity:.95;font-size:13px;margin-top:4px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+  /* Tabs */
+  .tabs{display:flex;gap:6px;overflow-x:auto;padding:14px 16px 4px;position:sticky;top:0;
+    background:var(--bg);z-index:10;scrollbar-width:thin}
+  .tab{flex:0 0 auto;border:none;background:#fff;border:1px solid var(--line);
+    color:var(--muted);padding:9px 16px;border-radius:22px;font-size:14px;cursor:pointer;
+    font-weight:600;transition:.15s;white-space:nowrap}
+  .tab.active{background:var(--ocean);color:#fff;border-color:var(--ocean);box-shadow:0 3px 10px rgba(46,134,171,.3)}
+  .panel{display:none;padding:18px 0}
+  .panel.active{display:block;animation:fade .25s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  /* Cards */
+  .grid{display:grid;gap:14px}
+  .grid.c3{grid-template-columns:repeat(3,1fr)}
+  .grid.c2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:780px){.grid.c3,.grid.c2{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;
+    box-shadow:0 2px 10px rgba(0,0,0,.03)}
+  .childcard{position:relative;overflow:hidden}
+  .childcard .bar{height:6px;border-radius:6px;margin:-16px -16px 14px}
+  .avatar{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;font-size:30px;color:#fff;margin-bottom:8px}
+  .childcard h3{font-size:17px}
+  .childcard .meta{font-size:12px;color:var(--muted);margin-bottom:12px}
+  .pts{font-size:30px;font-weight:800}
+  .pts small{font-size:13px;color:var(--muted);font-weight:500}
+  .progress{height:9px;background:#f0ece2;border-radius:6px;overflow:hidden;margin-top:8px}
+  .progress>span{display:block;height:100%;border-radius:6px}
+  .pill{display:inline-block;font-size:11px;padding:2px 9px;border-radius:12px;background:#fff3e6;color:#d9772e;margin-top:8px}
+  h2.sec{font-size:18px;margin:8px 2px 14px;display:flex;align-items:center;gap:8px}
+  h2.sec::before{content:"";width:5px;height:18px;background:var(--ocean);border-radius:3px}
+  /* Tables */
+  table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border-radius:12px;overflow:hidden}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:#faf6ee;color:var(--muted);font-weight:600;font-size:12px}
+  tr:last-child td{border-bottom:none}
+  .cat{font-size:11px;padding:2px 8px;border-radius:10px;color:#fff;font-weight:600}
+  .c-home{background:#F2994A}.c-read{background:#2E86AB}.c-sport{background:#5FBF73}
+  .c-video{background:#9B6BFF}.c-chore{background:#B08968}
+  /* Buttons */
+  .btn{border:none;border-radius:10px;padding:9px 14px;font-size:13.5px;cursor:pointer;
+    font-weight:600;transition:.15s;background:var(--ocean);color:#fff}
+  .btn:hover{filter:brightness(1.05)}
+  .btn.sm{padding:6px 11px;font-size:12.5px}
+  .btn.ghost{background:#fff;color:var(--ocean);border:1px solid var(--ocean)}
+  .btn.coral{background:var(--coral)}
+  .btn.green{background:var(--green)}
+  .btn.warn{background:#E0A458}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .mt{margin-top:14px}.mb{margin-bottom:14px}
+  /* Check-in */
+  .kidtab{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:14px;
+    padding:8px 14px;cursor:pointer;font-weight:600;font-size:14px;display:flex;gap:8px;align-items:center}
+  .kidtab.active{border-color:transparent;color:#fff}
+  .task{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;
+    display:flex;align-items:center;gap:12px}
+  .task .info{flex:1}
+  .task .tname{font-weight:600;font-size:14.5px}
+  .task .tsub{font-size:12px;color:var(--muted)}
+  .task.done{background:#f3fbf4;border-color:#bfe9c7}
+  .task.done .tname{color:var(--green);text-decoration:line-through;text-decoration-color:#bfe9c7}
+  .dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:6px}
+  .ledger td.del{color:var(--coral);font-weight:700}
+  .ledger td.add{color:var(--green);font-weight:700}
+  .note{font-size:12px;color:var(--muted)}
+  .storeitem{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;
+    align-items:center;gap:12px}
+  .storeitem .ic{font-size:30px}
+  .big{font-size:26px;font-weight:800}
+  .muted{color:var(--muted)}
+  input,select{font-family:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);
+    border-radius:9px;background:#fff;color:var(--ink)}
+  .callout{background:#eaf6fb;border:1px solid #cfe9f4;border-radius:12px;padding:14px 16px;font-size:13.5px}
+  .callout b{color:var(--ocean)}
+  .rank{display:flex;gap:8px;align-items:center}
+  .footer-note{text-align:center;color:var(--muted);font-size:12px;margin-top:26px;padding:0 16px}
+  .badge-row{display:flex;gap:6px;flex-wrap:wrap}
+  .badge{font-size:11px;background:#f1f0ff;color:#6a4bd6;padding:3px 9px;border-radius:10px}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2b2b33;color:#fff;
+    padding:11px 20px;border-radius:24px;font-size:14px;z-index:99;opacity:0;transition:.3s;pointer-events:none}
+  .toast.show{opacity:1}
+  .schedule td:first-child{font-weight:700;color:var(--ocean);white-space:nowrap}
+  .cat-tag{font-size:11px;padding:1px 7px;border-radius:8px;color:#fff;margin-left:6px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+    <div style="flex:1;min-width:0">
+      <h1>🌞 家有小掌柜</h1>
+      <p style="font-size:12px;margin-top:2px">作业 / 阅读 / 运动 / 视频 / 家务 · 积分可兑现零花钱</p>
+      <p id="hdrDate" style="margin-top:2px;opacity:.95;font-size:12px"></p>
+      <p id="saveStatus" style="margin-top:2px;font-size:11px;color:#5FBF73;font-weight:600"></p>
+    </div>
+    <button class="btn sm" id="topSaveBtn" onclick="showInstallHelp()" style="flex-shrink:0;background:var(--sun);color:#2b2b33;border-radius:14px;padding:9px 13px;font-weight:700;font-size:13px;white-space:nowrap;box-shadow:0 3px 12px rgba(255,201,60,.4)">📲 放桌面</button>
+  </div>
+  <div id="installHelp" style="display:none;margin-top:6px;padding:8px 12px;background:#fff7e6;border-radius:10px;font-size:12px;color:#8a6d3b;line-height:1.6">
+    📱 <b>一次性设置，以后点桌面图标即用：</b><br>
+    ① Safari 底部点「📤 分享」→ ② 选「<b>添加到主屏幕</b>」→ ③ 桌面出现图标，以后从它打开<br>
+    <span style="color:#5FBF73">✅ 已自动保存，无需手动点保存</span>
+  </div>
+</header>
+
+<div class="tabs" id="tabs">
+  <button class="tab active" data-p="dash">🏠 仪表盘</button>
+  <button class="tab" data-p="plan">📚 学习方案</button>
+  <button class="tab" data-p="checkin">✅ 今日打卡</button>
+  <button class="tab" data-p="ledger">📒 积分账本</button>
+  <button class="tab" data-p="store">🎁 兑换商城</button>
+  <button class="tab" data-p="rules">⚙️ 制度说明</button>
+</div>
+
+<div class="wrap">
+
+  <!-- DASHBOARD -->
+  <section class="panel active" id="dash">
+    <div class="callout mb">
+      <b>本周概览</b>：左侧为三个孩子当前积分余额与本周赚取进度。积分可随时在「兑换商城」兑现为零花钱，外出想买什么都能花自己的积分。
+    </div>
+    <div class="grid c3" id="dashCards"></div>
+
+    <h2 class="sec mt">🏆 本周积分榜</h2>
+    <div class="card" id="rankCard"></div>
+
+    <h2 class="sec mt">📌 今日待办提醒（按主线分类）</h2>
+    <div class="grid c3" id="todayCards"></div>
+  </section>
+
+  <!-- PLAN -->
+  <section class="panel" id="plan">
+    <div class="callout mb">每个孩子情况不同，方案也分层设计：大姐以「输出型创作」为主，二宝以「阅读+分享」为主，老三以「启蒙习惯」为主。作息为参考模板，可按实际弹性调整。</div>
+    <div id="planCards"></div>
+  </section>
+
+  <!-- CHECKIN -->
+  <section class="panel" id="checkin">
+    <div class="row mb" id="kidTabs"></div>
+    <div class="row mb">
+      <label style="font-weight:600">补录日期</label>
+      <input type="date" id="backDate" onchange="renderCheckin()" style="padding:6px 10px;border:1px solid var(--line);border-radius:10px;font-size:14px">
+      <button class="btn ghost sm" onclick="document.getElementById('backDate').value='';renderCheckin()">回到今天</button>
+      <span class="note">留空 = 今天；选过去日期可补录历史打卡，记录会记到所选那一天。</span>
+    </div>
+    <div class="callout mb" id="checkinHint"></div>
+    <div id="checkinList"></div>
+  </section>
+
+  <!-- LEDGER -->
+  <section class="panel" id="ledger">
+    <div class="row mb">
+      <select id="ledgerChild"><option value="all">全部孩子</option></select>
+      <button class="btn ghost sm" onclick="renderLedger()">刷新</button>
+    </div>
+    <div class="card"><table class="ledger" id="ledgerTable"></table></div>
+  </section>
+
+  <!-- STORE -->
+  <section class="panel" id="store">
+    <h2 class="sec">🎁 积分商城（孩子用积分兑换的目标 & 特权）</h2>
+    <div class="grid c3" id="storeGrid"></div>
+
+    <h2 class="sec mt">🤝 借入 / 借出（兄弟姐妹互助）</h2>
+    <div class="card">
+      <div class="row mb">
+        <select id="borrowerSel"></select><span class="note">借入方</span>
+        <span style="font-size:18px;color:var(--muted)">← 向</span>
+        <select id="lenderSel"></select><span class="note">借出方</span>
+        <input id="borrowPoints" type="number" placeholder="积分" style="width:100px">
+        <button class="btn" onclick="doBorrow()">确认借出</button>
+      </div>
+      <div class="note">积分不够时，可向兄弟姐妹借：借出方扣对应积分，借入方加对应积分；还清后自动冲回。不能借给自己。</div>
+    </div>
+
+    <h2 class="sec mt">💳 兑现 / 外出消费</h2>
+    <div class="card">
+      <div class="row mb">
+        <select id="spendChild"></select>
+        <input id="spendNote" placeholder="例如：买冰淇淋 / 兑现零花钱" style="flex:1;min-width:160px">
+        <input id="spendPoints" type="number" placeholder="扣减积分" style="width:120px">
+        <button class="btn coral" onclick="doSpend()">记录扣除</button>
+      </div>
+      <div class="note">「兑现零花钱」= 把当前积分余额换成现金给孩子；「外出消费」= 孩子外出买东西，按等价积分扣除。1 积分 = <b id="rateLabel">0.50</b> 元（可在制度说明里改）。</div>
+    </div>
+
+    <h2 class="sec mt">🤝 借贷记录</h2>
+    <div class="card"><table class="ledger" id="loanTable"></table></div>
+
+    <h2 class="sec mt">🎖 通用奖惩登记（三孩一致）</h2>
+    <div class="card">
+      <div class="row mb">
+        <select id="rpChild"></select><span class="note">孩子</span>
+        <select id="rpRule">
+          <option value="coop">合作互助（大帮小等） +30</option>
+          <option value="solve">主动解决问题 +50</option>
+          <option value="create">创造力方案（提出并试行） +100</option>
+          <option value="fight">打架打闹 / 惹事 -20</option>
+        </select>
+        <input id="rpNote" placeholder="协作内容 / 主动做了什么（奖励项必填）" style="flex:1;min-width:180px">
+        <button class="btn" onclick="doReward()">登记</button>
+      </div>
+      <div class="note">合作互助：一次协作中参与的每个孩子各 +30，分别登记；主动解决问题 / 创造力需填写具体说明；打架打闹单次 -20。登记即写入积分账本。</div>
+    </div>
+
+    <h2 class="sec mt">🧾 兑换 / 消费记录</h2>
+    <div class="card"><table class="ledger" id="spendTable"></table></div>
+  </section>
+
+  <!-- RULES -->
+  <section class="panel" id="rules">
+    <div class="card mb">
+      <h3 style="margin-bottom:10px">💡 积分兑换比例设置</h3>
+      <div class="row">
+        <label>1 积分 = </label>
+        <input id="rateInput" type="number" step="0.01" value="0.50" style="width:100px">
+        <span>元</span>
+        <button class="btn sm" onclick="saveRate()">保存</button>
+        <span class="note" id="ratePreview"></span>
+      </div>
+    </div>
+
+    <h2 class="sec">📐 积分获取规则（主线 + 输出 + 家务）</h2>
+    <div class="card mb"><table id="earnTable"></table></div>
+
+    <h2 class="sec">➖ 积分扣除规则（做不到 / 质量不达标）</h2>
+    <div class="card mb"><table id="deductTable"></table></div>
+
+    <h2 class="sec">⭐ 通用奖惩（三孩一致 · 手动登记）</h2>
+    <div class="card mb"><table id="generalTable"></table></div>
+
+    <h2 class="sec">🎯 平台设计理念（给家长的说明）</h2>
+    <div class="grid c2">
+      <div class="card">
+        <h3 style="margin-bottom:8px">五大主线</h3>
+        <ul style="padding-left:18px;font-size:14px">
+          <li><b>学业主线</b>：学校老师布置的作业，基础必须完成</li>
+          <li><b>中英文阅读</b>：每天中英各读，雷打不动</li>
+          <li><b>运动</b>：跳绳、骑行等，每天动起来</li>
+          <li><b>视频输出</b>：大姐英文游记/分享、二宝读书分享、老三录视频</li>
+          <li><b>家务</b>：洗碗、洗自己衣服、倒垃圾，人人有责</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:8px">激励闭环</h3>
+        <p style="font-size:14px">完成 → 加分 → 积分累积 → 可兑现零花钱 / 兑换商城目标 → 外出自主消费。做不到或质量差 → 扣分。让三个孩子从「被催促」变成「为自己攒积分」。</p>
+        <div class="badge-row mt">
+          <span class="badge">可视化进度</span><span class="badge">每周结算</span>
+          <span class="badge">差异化方案</span><span class="badge">正向激励为主</span>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="sec mt">🧰 数据管理</h2>
+    <div class="card mb">
+      <div class="row">
+        <button class="btn coral sm" onclick="resetAll()">🧹 清空重置（从今天重新算起）</button>
+        <button class="btn ghost sm" onclick="loadDemo()">载入演示数据</button>
+        <button class="btn ghost sm" onclick="exportData()">⬇️ 导出备份</button>
+        <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importData(this)">
+        <button class="btn ghost sm" onclick="document.getElementById('importFile').click()">⬆️ 导入备份</button>
+        <span class="note">重置会清空全部积分、账本、借贷与登记记录，重新开始；演示数据用于预览平台效果。导出可把全部历史存成 JSON 文件，导入可随时恢复。</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer-note">家有小掌柜 · 原型演示版 · 数据保存在本浏览器（localStorage），刷新不丢失。<br>
+    上次保存：<b id="savedAt">—</b> ｜ 建议定期点「⬇️ 导出备份」存一份 JSON 文件，避免浏览器清理本地存储导致历史丢失。<br>
+    若发现历史为空：多半是用无痕窗口打开、或打开了不同/旧路径的文件——请改用普通窗口打开同一份文件，再用「⬆️ 导入备份」恢复。</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ 数据模型 ============ */
+const CATS = {
+  home:{name:'作业',cls:'c-home'}, read:{name:'阅读',cls:'c-read'},
+  sport:{name:'运动',cls:'c-sport'}, video:{name:'视频输出',cls:'c-video'},
+  chore:{name:'家务',cls:'c-chore'}
+};
+const CHILDREN = [
+  { id:'dajie', name:'Emily', grade:'六年级 · 12岁', emoji:'👧', color:'#FF7B6B',
+    role:'小博主 · 输出型',
+    schedule:[
+      ['自主安排','数学 + 数学阅读（主线优先）',CATS.home],
+      ['自主安排','语文阅读 + 语文作业单（与数学轮换穿插）',CATS.read],
+      ['自主安排','旅行英文视频输出（呼伦贝尔/哈尔滨/青岛）',CATS.video],
+      ['自主安排','运动 + 家务（每日保底）',CATS.sport]
+    ],
+    tasks:[
+      // —— 数学加油包（一次性，自排进度）——
+      {id:'d_m1',name:'数学·计算练习 第1页',cat:'home',pts:6,freq:'once'},
+      {id:'d_m2',name:'数学·计算练习 第2页',cat:'home',pts:6,freq:'once'},
+      {id:'d_m3',name:'数学·计算练习 第3页',cat:'home',pts:6,freq:'once'},
+      {id:'d_m4',name:'数学·计算练习 第4页',cat:'home',pts:6,freq:'once'},
+      {id:'d_m5',name:'数学·计算练习 第5页',cat:'home',pts:6,freq:'once'},
+      {id:'d_c1s',name:'数学·综合练习 第1套(4页)',cat:'home',pts:15,freq:'once'},
+      {id:'d_c2s',name:'数学·综合练习 第2套(4页)',cat:'home',pts:15,freq:'once'},
+      {id:'d_c3s',name:'数学·综合练习 第3套(4页)',cat:'home',pts:15,freq:'once'},
+      {id:'d_c4s',name:'数学·综合练习 第4套(4页)',cat:'home',pts:15,freq:'once'},
+      {id:'d_c5s',name:'数学·综合练习 第5套(4页)',cat:'home',pts:15,freq:'once'},
+      {id:'d_e1',name:'数学·易错题 第1页',cat:'home',pts:5,freq:'once'},
+      {id:'d_e2',name:'数学·易错题 第2页',cat:'home',pts:5,freq:'once'},
+      {id:'d_e3',name:'数学·易错题 第3页',cat:'home',pts:5,freq:'once'},
+      {id:'d_e4',name:'数学·易错题 第4页',cat:'home',pts:5,freq:'once'},
+      // —— 厚书阅读（每日可打卡，读完全书即锁定结束）——
+      {id:'d_rb1',name:'数学阅读：《数学实验王》',cat:'read',pts:20,freq:'daily',finisable:true},
+      {id:'d_rb2',name:'数学阅读：《这不是一本数学书》',cat:'read',pts:20,freq:'daily',finisable:true},
+      {id:'d_rb3',name:'数学阅读：《汉声数学》',cat:'read',pts:20,freq:'daily',finisable:true},
+      {id:'d_rb4',name:'语文阅读：鲁迅作品',cat:'read',pts:20,freq:'daily',finisable:true},
+      {id:'d_rb5',name:'语文阅读：《童年》（重点）',cat:'read',pts:20,freq:'daily',finisable:true},
+      {id:'d_rb6',name:'《童年》配套练习 5页',cat:'home',pts:25,freq:'once'},
+      {id:'d_rb7',name:'语文导读单练习',cat:'home',pts:20,freq:'once'},
+      {id:'d_rb8',name:'暑假作业本·英语阅读（最后做）',cat:'read',pts:15,freq:'once'},
+      // —— 旅行英文视频输出（分级积分：自备素材100/妈妈准备好50）——
+      {id:'d_v1',name:'英文视频·呼伦贝尔旅行',cat:'video',pts:50,freq:'once',tier:true},
+      {id:'d_v2',name:'英文视频·哈尔滨旅行',cat:'video',pts:50,freq:'once',tier:true},
+      {id:'d_v3',name:'英文视频·青岛旅行',cat:'video',pts:50,freq:'once',tier:true},
+      {id:'d_v4',name:'英文分享视频（自由主题·可多次）',cat:'video',pts:50,freq:'multi',tier:true},
+      // —— 每日保底习惯 ——
+      {id:'d_r1',name:'英文阅读 30min',cat:'read',pts:20,freq:'每日'},
+      {id:'d_r2',name:'中文阅读 30min',cat:'read',pts:20,freq:'每日'},
+      {id:'d_s1',name:'运动（跳绳/骑行 30min）',cat:'sport',pts:20,freq:'每日'},
+      {id:'d_c1',name:'洗碗',cat:'chore',pts:10,freq:'每日'},
+      {id:'d_c2',name:'洗自己衣服',cat:'chore',pts:10,freq:'每日'},
+      {id:'d_c3',name:'倒垃圾',cat:'chore',pts:5,freq:'每日'},
+      {id:'d_t1',name:'卧室收纳整理（叠被/摆枕/脏衣入洗衣房）',cat:'chore',pts:10,freq:'每日'}
+    ]},
+  { id:'erbao', name:'Eric', grade:'四年级 · 10岁', emoji:'🧒', color:'#4FB0C6',
+    role:'阅读分享型',
+    schedule:[
+      ['自主安排','语文阅读：查理(中)/中国神话传说（厚书·每日读一点）',CATS.read],
+      ['自主安排','英语：RAZ阅读(目标Level O) + 英语练习 / IXL',CATS.read],
+      ['自主安排','数学：PPT / 成长记录 / 竞赛题(每日30min)',CATS.home],
+      ['自主安排','观看：中国神话 / 山海经动画 + 查理电影',CATS.read],
+      ['自主安排','视频输出：读书 / 3D作品 / 观影分享(每个50分)',CATS.video],
+      ['自主安排','运动 + 家务 + 卧室收纳（每日保底）',CATS.sport]
+    ],
+    tasks:[
+      // —— 语文：厚书阅读（每日可打卡，读完全书即锁定 +50 奖励）——
+      {id:'e_rb1',name:'语文阅读：《查理和巧克力工厂》(中文·厚书)',cat:'read',pts:20,freq:'daily',finisable:true},
+      {id:'e_rb2',name:'语文阅读：《中国神话传说》',cat:'read',pts:20,freq:'daily',finisable:true},
+      {id:'e_rb3',name:'英文阅读：Charlie and the Chocolate Factory(英文版)',cat:'read',pts:20,freq:'daily',finisable:true},
+      {id:'e_h3',name:'《查理和巧克力工厂》读后 6页题',cat:'home',pts:30,freq:'once'},
+      {id:'e_h1',name:'写熊猫主题作文',cat:'home',pts:30,freq:'once'},
+      {id:'e_h2',name:'日记小练笔（中文 + 英文日记·完整一篇）',cat:'home',pts:20,freq:'once'},
+      // —— 观看（文化输入）——
+      {id:'e_w1',name:'观看《中国神话故事》动画片',cat:'read',pts:15,freq:'once'},
+      {id:'e_w2',name:'观看《山海经》动画片(给孩子看)',cat:'read',pts:15,freq:'once'},
+      {id:'e_w3',name:'观看电影《查理和巧克力工厂》',cat:'read',pts:15,freq:'once'},
+      // —— 数学 ——
+      {id:'e_m1',name:'制作PPT：本学期知识总结',cat:'home',pts:40,freq:'once'},
+      {id:'e_m2',name:'撰写数学成长记录',cat:'home',pts:30,freq:'once'},
+      {id:'e_m3',name:'数学竞赛题（每日30min·套数待定）',cat:'home',pts:15,freq:'每日'},
+      // —— 英语 ——
+      {id:'e_r1',name:'RAZ 英文阅读（目标 Level O·每日1-2篇）',cat:'read',pts:20,freq:'每日'},
+      {id:'e_e1',name:'英语练习题 4页',cat:'home',pts:20,freq:'once'},
+      {id:'e_e2',name:'IXL 任务（每日练习）',cat:'home',pts:15,freq:'每日'},
+      // —— 课外创作 / 视频输出 ——
+      {id:'e_p1',name:'制作编程游戏（图片城市·记录难忘事）',cat:'home',pts:60,freq:'once'},
+      {id:'e_v1',name:'录制分享视频（读书/3D作品/观影·每个50分）',cat:'video',pts:50,freq:'multi'},
+      // —— 每日保底习惯 ——
+      {id:'e_s1',name:'运动（跳绳/户外 30min）',cat:'sport',pts:20,freq:'每日'},
+      {id:'e_c1',name:'洗碗',cat:'chore',pts:10,freq:'每日'},
+      {id:'e_c2',name:'倒垃圾',cat:'chore',pts:5,freq:'每日'},
+      {id:'e_c3',name:'洗自己衣服',cat:'chore',pts:10,freq:'每日'},
+      {id:'e_t1',name:'卧室收纳整理（叠被/摆枕/脏衣入洗衣房）',cat:'chore',pts:10,freq:'每日'}
+    ]},
+  { id:'sanbao', name:'Ella', grade:'幼升小 · 6岁', emoji:'👦', color:'#5FBF73',
+    role:'启蒙习惯型',
+    schedule:[
+      ['自主安排','英文听读：音频30min+ / 绘本 / 薄书·厚章节书',CATS.read],
+      ['自主安排','中文亲子阅读（识字书·数学启蒙绘本）',CATS.read],
+      ['自主安排','暑假生活（每日1页）/ 轻量运动',CATS.home],
+      ['自主安排','手工 / 录制分享视频（说英语·展示作品）',CATS.video],
+      ['自主安排','力所能及家务 + 卧室收纳整理',CATS.chore]
+    ],
+    tasks:[
+      // —— 暑假生活（每日1页，写完即止）——
+      {id:'s_hw',name:'暑假生活（每日完成1页）',cat:'home',pts:10,freq:'每日'},
+      // —— 英文听读（薄书/厚章节书两档）——
+      {id:'s_r1',name:'英文音频时间 30min+',cat:'read',pts:20,freq:'每日'},
+      {id:'s_r2',name:'英文阅读（绘本·每日）',cat:'read',pts:20,freq:'每日'},
+      {id:'s_rb1',name:'英文薄书单本（小薄本）',cat:'read',pts:10,freq:'once'},
+      {id:'s_rb2',name:'英文厚章节书（读完即结束）',cat:'read',pts:20,freq:'daily',finisable:true},
+      // —— 中文亲子阅读 ——
+      {id:'s_r3',name:'中文亲子阅读（识字书·数学启蒙绘本）',cat:'read',pts:10,freq:'每日'},
+      // —— 运动 ——
+      {id:'s_s1',name:'轻量运动',cat:'sport',pts:20,freq:'每日'},
+      // —— 手工 / 视频输出 ——
+      {id:'s_k1',name:'做手工（不录制分享）',cat:'video',pts:10,freq:'multi'},
+      {id:'s_v1',name:'录制分享视频（手工/作品/说英语）',cat:'video',pts:50,freq:'multi'},
+      // —— 家务 ——
+      {id:'s_c1',name:'洗碗',cat:'chore',pts:10,freq:'每日'},
+      {id:'s_c2',name:'洗自己衣服',cat:'chore',pts:10,freq:'每日'},
+      {id:'s_c3',name:'倒垃圾',cat:'chore',pts:5,freq:'每日'},
+      {id:'s_c4',name:'辅助做饭',cat:'chore',pts:10,freq:'每日'},
+      {id:'s_t1',name:'卧室收纳整理（叠被/摆枕/脏衣入洗衣房）',cat:'chore',pts:10,freq:'每日'}
+    ]}
+];
+const STORE = [
+  {id:'st1',ic:'🍦',name:'冰淇淋自由',cost:30},
+  {id:'st4',ic:'🧸',name:'心仪小玩具',cost:120},
+  {id:'st5',ic:'🎬',name:'看一场电影',cost:150},
+  {id:'st11',ic:'🛡️',name:'不做家务日特权卡',cost:150},
+  {id:'st7',ic:'🎡',name:'室内游乐场',cost:180},
+  {id:'st6',ic:'🍔',name:'周末家庭大餐点单权',cost:200},
+  {id:'st9',ic:'🎢',name:'室外游乐场（游乐园）',cost:350},
+  {id:'st10',ic:'✈️',name:'解锁一次全家旅行',cost:1000},
+  {id:'st12',ic:'🖨️',name:'3D打印机设备',cost:20000}
+];
+const EARN_RULES = [
+  ['主线作业','学校作业按科完成+家长检查','基础必做，完成即加分'],
+  ['中英文阅读','每天中英各读，时长达标','习惯养成，每日稳定加分'],
+  ['运动','跳绳/骑行/户外达标','体质管理，每日加分'],
+  ['视频输出','大姐英文游记/分享、二宝读书分享、老三录视频','高价值创作，单项目高分'],
+  ['家务','洗碗/洗衣/倒垃圾','责任感，按项加分'],
+  ['额外奖励','质量超预期、互动数据好、主动帮助','家长酌情 +10~30 分']
+];
+const DEDUCT_RULES = [
+  ['漏做主线','当日作业/阅读/运动未做','该项不得分（零获取）'],
+  ['质量不达标','敷衍/错误多/视频糊弄','扣该项 50%~100% 分值'],
+  ['家务未完成','轮值任务逃避','扣对应分值并补做'],
+  ['态度问题','拖延严重/顶嘴/不配合','家长酌情 -10~20 分'],
+  ['兑换违约','兑现后未用于约定用途','下次暂停兑现一次']
+];
+// 通用奖惩（三孩一致，手动登记）
+const RP_RULES = {
+  coop:  {name:'合作互助（大帮小等）',delta:30},
+  solve: {name:'主动解决问题',delta:50},
+  create:{name:'创造力方案（提出并试行）',delta:100},
+  fight: {name:'打架打闹 / 惹事',delta:-20}
+};
+const GENERAL_RULES = [
+  ['合作互助','大帮小 / 互相协作，参与的每个孩子各 +30','+30 / 人·次'],
+  ['主动解决问题','发现新问题并自己动手修理/调整，需说明主动做了什么','+50 / 次'],
+  ['创造力奖励','提出自己的设计方案并和父母一起尝试（如做个小程序）','+100 / 次'],
+  ['打架打闹','打架 / 产生分歧 / 故意惹事招人，单次扣除','-20 / 次']
+];
+
+/* ============ 状态存储（三重自动持久化） ============ */
+const KEY='summerButler_v2';
+const BALANCE_KEY='sb_lastBalance';
+const IDB_NAME='sb_idb', IDB_STORE='kv';
+
+/* IndexedDB：手机上比 localStorage 更耐久，作为第三重保险 */
+function idbAvailable(){ try{ return typeof indexedDB!=='undefined'; }catch(e){ return false; } }
+function idbSave(key,val){
+  if(!idbAvailable()) return;
+  try{
+    const req=indexedDB.open(IDB_NAME);
+    req.onsuccess=()=>{ try{
+      const db=req.result;
+      const tx=db.transaction(IDB_STORE,'readwrite');
+      tx.objectStore(IDB_STORE).put(val,key);
+    }catch(e){} };
+  }catch(e){}
+}
+function idbLoad(key,cb){
+  if(!idbAvailable()){ cb(null); return; }
+  try{
+    const req=indexedDB.open(IDB_NAME);
+    req.onsuccess=()=>{ try{
+      const db=req.result;
+      const tx=db.transaction(IDB_STORE,'readonly');
+      const g=tx.objectStore(IDB_STORE).get(key);
+      g.onsuccess=()=>cb(g.result||null);
+      g.onerror=()=>cb(null);
+    }catch(e){ cb(null); } };
+    req.onerror=()=>cb(null);
+  }catch(e){ cb(null); }
+}
+
+let DB = load();
+function load(){
+  try{
+    let s=localStorage.getItem(KEY);
+    if(s){ const d=JSON.parse(s); if(d.ledger&&d.ledger.length>0||Object.values(d.balance||{}).some(v=>v>0)) return d; }
+    s=localStorage.getItem(KEY+'_backup');
+    if(s){ const d=JSON.parse(s); if(d.ledger&&d.ledger.length>0||Object.values(d.balance||{}).some(v=>v>0)) return d; }
+  }catch(e){}
+  return { rate:0.50, ledger:[], spends:[], balance:{}, loans:[], finished:{} };
+}
+// 自动修复：localStorage 被清空时，从 IndexedDB 恢复
+function repairFromIDB(){
+  idbLoad(KEY,(data)=>{
+    if(!data) return;
+    try{
+      const d=JSON.parse(data);
+      if(!(d.ledger&&d.ledger.length>0||Object.values(d.balance||{}).some(v=>v>0))) return;
+      if(localStorage.getItem(KEY)) return; // 本地还有就不覆盖
+      DB=d; normalizeDB(); save(); toast('已从本地数据库自动恢复 ✅'); renderAll();
+    }catch(e){}
+  });
+}
+function normalizeDB(){
+  CHILDREN.forEach(c=>{ if(DB.balance[c.id]===undefined) DB.balance[c.id]=0; });
+  if(!Array.isArray(DB.loans)) DB.loans=[];
+  if(!DB.finished||typeof DB.finished!=='object') DB.finished={};
+  if(typeof DB.rate!=='number') DB.rate=0.5;
+  if(!Array.isArray(DB.ledger)) DB.ledger=[];
+  if(!Array.isArray(DB.spends)) DB.spends=[];
+}
+function save(){ 
+  DB.savedAt=new Date().toISOString(); 
+  const str=JSON.stringify(DB);
+  try{ localStorage.setItem(KEY,str); }catch(e){}
+  try{ localStorage.setItem(KEY+'_backup',str); }catch(e){}
+  try{ localStorage.setItem(BALANCE_KEY, JSON.stringify(DB.balance)); }catch(e){}
+  idbSave(KEY, str); // 第三重：IndexedDB
+  updateSaveStatus(); 
+}
+CHILDREN.forEach(c=>{ if(DB.balance[c.id]===undefined) DB.balance[c.id]=0; });
+if(!Array.isArray(DB.loans)) DB.loans=[];
+if(!DB.finished||typeof DB.finished!=='object') DB.finished={};
+
+// 数据丢失检测
+(function checkDataLoss(){
+  try{
+    const prev=JSON.parse(localStorage.getItem(BALANCE_KEY)||'{}');
+    const hadData=Object.values(prev).some(v=>v>0);
+    const nowEmpty=Object.values(DB.balance).every(v=>v===0||v===undefined);
+    const hasLedger=DB.ledger&&DB.ledger.length>0;
+    if(hadData&&nowEmpty&&!hasLedger){ window.__dataLost=true; window.__prevBalance=prev; }
+  }catch(e){}
+})();
+
+function updateSaveStatus(){
+  const el=document.getElementById('saveStatus');
+  if(!el)return;
+  const total=Object.values(DB.balance).reduce((s,v)=>s+v,0);
+  const t=DB.savedAt?fmtDateTime(DB.savedAt):'未保存';
+  el.textContent='已保存 · 合计 '+total+' 分 · '+t;
+}
+function quickSave(){ exportData(); }
+
+let activeKid='dajie';
+
+const WK=['周日','周一','周二','周三','周四','周五','周六'];
+function fmtDate(d){ d=new Date(d); const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+WK[d.getDay()]; }
+function fmtDateTime(iso){ if(!iso) return '-'; const d=new Date(iso); const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes()); }
+
+
+/* ============ 工具 ============ */
+function todayStr(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
+function weekKey(d){ const dt=new Date(d); const day=(dt.getDay()+6)%7; dt.setDate(dt.getDate()-day); const p=n=>String(n).padStart(2,'0'); return dt.getFullYear()+'-'+p(dt.getMonth()+1)+'-'+p(dt.getDate()); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),1800); }
+function money(pts){ return '¥'+(pts*DB.rate).toFixed(2); }
+
+/* ============ 渲染：仪表盘 ============ */
+function renderDash(){
+  const wk=weekKey(new Date());
+  const now=new Date();
+  const hd=document.getElementById('hdrDate'); if(hd) hd.textContent='📅 今天：'+fmtDate(now);
+  const sa=document.getElementById('savedAt'); if(sa) sa.textContent=fmtDateTime(DB.savedAt);
+  const cards=document.getElementById('dashCards'); cards.innerHTML='';
+  const ranks=[];
+  CHILDREN.forEach(c=>{
+    const wkPts=DB.ledger.filter(l=>l.child===c.id && l.delta>0 && l.wk===wk)
+                  .reduce((s,l)=>s+l.delta,0);
+    const goal= c.id==='dajie'?400:c.id==='erbao'?300:200;
+    const pct=Math.min(100,Math.round(wkPts/goal*100));
+    ranks.push({c,wkPts,pct});
+    cards.insertAdjacentHTML('beforeend',`
+      <div class="card childcard">
+        <div class="bar" style="background:${c.color}"></div>
+        <div class="avatar" style="background:${c.color}">${c.emoji}</div>
+        <h3>${c.name} <span class="muted" style="font-size:13px;font-weight:500">${c.grade}</span></h3>
+        <div class="meta">${c.role}</div>
+        <div class="pts">${DB.balance[c.id]}<small> 分</small></div>
+        <div class="note">≈ ${money(DB.balance[c.id])} 零花钱</div>
+        <div class="progress"><span style="width:${pct}%;background:${c.color}"></span></div>
+        <div class="note mt">本周已赚 <b style="color:${c.color}">${wkPts}</b> 分（目标 ${goal}）</div>
+      </div>`);
+  });
+  // rank
+  ranks.sort((a,b)=>b.wkPts-a.wkPts);
+  document.getElementById('rankCard').innerHTML =
+    ranks.map((r,i)=>`<div class="rank mb" style="justify-content:space-between">
+      <span>${['🥇','🥈','🥉'][i]||'🎖'} <b>${r.c.name}</b> <span class="muted">${r.c.grade}</span></span>
+      <span><b style="color:${r.c.color}">${r.wkPts}</b> 分本周 · 进度 ${r.pct}%</span></div>`).join('')
+    + `<div class="note">进度满 100% = 本周完成度达标，可额外奖励 20 分（家长判定）。</div>`;
+
+  // today reminders by category
+  const tc=document.getElementById('todayCards'); tc.innerHTML='';
+  Object.keys(CATS).forEach(catKey=>{
+    const items=[];
+    CHILDREN.forEach(c=>c.tasks.filter(t=>(t.freq==='每日'||t.freq==='multi')&&!(t.finisable&&isFinished(t.id)))
+      .forEach(t=>items.push(`${c.emoji}${c.name}：${t.name.split('（')[0]}`)));
+    if(!items.length) return;
+    tc.insertAdjacentHTML('beforeend',`
+      <div class="card">
+        <span class="cat ${CATS[catKey].cls}">${CATS[catKey].name}</span>
+        <ul style="padding-left:18px;margin-top:10px;font-size:13.5px">${items.map(i=>`<li>${i}</li>`).join('')}</ul>
+      </div>`);
+  });
+}
+
+/* ============ 渲染：学习方案 ============ */
+function renderPlan(){
+  const box=document.getElementById('planCards'); box.innerHTML='';
+  CHILDREN.forEach(c=>{
+    const sched=c.schedule.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}<span class="cat-tag ${r[2].cls}">${r[2].name}</span></td></tr>`).join('');
+    const tasks=c.tasks.map(t=>`<tr><td><span class="cat ${CATS[t.cat].cls}">${CATS[t.cat].name}</span></td>
+      <td>${t.name}</td><td><b style="color:${c.color}">+${t.pts}</b></td><td>${t.freq}</td></tr>`).join('');
+    box.insertAdjacentHTML('beforeend',`
+      <div class="card mb">
+        <div class="row mb" style="justify-content:space-between">
+          <div class="row">
+            <div class="avatar" style="background:${c.color};width:46px;height:46px;font-size:24px">${c.emoji}</div>
+            <div><h3 style="font-size:18px">${c.name} · ${c.grade}</h3><div class="meta">${c.role}</div></div>
+          </div>
+          <span class="pill">当前积分 ${DB.balance[c.id]}</span>
+        </div>
+        <h4 style="margin:6px 0">🗓 每日作息参考</h4>
+        <table class="schedule">${sched}</table>
+        <h4 style="margin:14px 0 6px">🎯 任务与积分表</h4>
+        <table>${tasks}</table>
+      </div>`);
+  });
+}
+
+/* ============ 渲染：打卡 ============ */
+function renderKidTabs(){
+  const box=document.getElementById('kidTabs'); box.innerHTML='';
+  CHILDREN.forEach(c=>{
+    const el=document.createElement('div');
+    el.className='kidtab'+(c.id===activeKid?' active':'');
+    el.style.background = c.id===activeKid?c.color:'#fff';
+    el.innerHTML=`${c.emoji} ${c.name}`;
+    el.onclick=()=>{ activeKid=c.id; renderKidTabs(); renderCheckin(); };
+    box.appendChild(el);
+  });
+}
+function renderCheckin(){
+  const c=childById(activeKid);
+  const bd=document.getElementById('backDate');
+  const viewDate=(bd&&bd.value)?bd.value:todayStr();
+  const isBack=viewDate!==todayStr();
+  document.getElementById('checkinHint').innerHTML=
+    `<b style="color:${c.color}">${c.name}（${c.grade}）</b> ｜ 📅 <b>${fmtDate(viewDate)}</b>${isBack?' <span class="pill" style="background:#fff3e6;color:#d9772e">补录模式</span>':''} ｜ ${isBack?('补录历史打卡（记到 '+viewDate+'）'):'今日打卡'}：完成点「完成+分」，质量不达标可「扣X分」。本周已赚 <b>${weekPts(c.id)}</b> 分。`;
+  const list=document.getElementById('checkinList'); list.innerHTML='';
+  Object.keys(CATS).forEach(catKey=>{
+    const ts=c.tasks.filter(t=>t.cat===catKey);
+    if(!ts.length) return;
+    let html=`<h3 style="margin:16px 0 8px"><span class="cat ${CATS[catKey].cls}">${CATS[catKey].name}</span></h3>`;
+    ts.forEach(t=>{
+      const done=isDoneOn(c.id,t.id,viewDate);
+      const finished = t.finisable && isFinished(t.id);
+      const freqLabel = t.freq==='once'?'一次性':(t.freq==='weekly'?'每周':(t.freq==='multi'?'可多次':'每日'));
+      const subExtra = (t.finisable&&!finished)?' · 读完即结束':'';
+      const multiCount = t.freq==='multi' ? DB.ledger.filter(l=>l.child===c.id&&l.taskId===t.id&&l.date===viewDate&&l.delta>0).length : 0;
+      const ptsLabel = t.tier ? '50/100 分（自备素材翻倍）' : ('+'+t.pts+' 分');
+      const tip = finished?'全书已读完 ✓':(t.freq==='multi'?`已 +${multiCount} 次`:(done?'已打卡':ptsLabel));
+      const undoBtn = (t.freq==='multi'&&multiCount>0)?`<button class="btn ghost sm" onclick="undoTask('${c.id}','${t.id}','${viewDate}')">撤销上次</button>`:'';
+      html+=`<div class="task ${done||finished?'done':''}">
+        <div class="info">
+          <div class="tname">${t.name}</div>
+          <div class="tsub">${freqLabel}${subExtra} · <b style="color:${done||finished?'var(--green)':'var(--muted)'}">${tip}</b></div>
+        </div>
+        ${finished
+          ? `<span class="pill">已完成</span>`
+          : (done
+              ? `<button class="btn ghost sm" onclick="undoTask('${c.id}','${t.id}','${viewDate}')">撤销</button>${t.finisable?`<button class="btn green sm" onclick="finishBook('${c.id}','${t.id}','${viewDate}')">读完全书</button>`:''}`
+              : (t.tier
+                  ? `<button class="btn sm" style="background:${c.color}" onclick="doTaskOnDate('${c.id}','${t.id}','${viewDate}',50)">妈妈备好 +50</button>
+                     <button class="btn sm" style="background:${c.color}" onclick="doTaskOnDate('${c.id}','${t.id}','${viewDate}',100)">自备素材 +100</button>${t.finisable?`<button class="btn green sm" onclick="finishBook('${c.id}','${t.id}','${viewDate}')">读完全书</button>`:''}${undoBtn}`
+                  : `<button class="btn sm" style="background:${c.color}" onclick="doTaskOnDate('${c.id}','${t.id}','${viewDate}')">完成 +${t.pts}</button>
+                     <button class="btn warn sm" onclick="deductTaskOnDate('${c.id}','${t.id}','${viewDate}')">扣${t.pts}</button>${t.finisable?`<button class="btn green sm" onclick="finishBook('${c.id}','${t.id}','${viewDate}')">读完全书</button>`:''}${undoBtn}`)
+             )}
+      </div>`;
+    });
+    list.insertAdjacentHTML('beforeend',html);
+  });
+}
+function weekPts(id){ const wk=weekKey(new Date());
+  return DB.ledger.filter(l=>l.child===id&&l.delta>0&&l.wk===wk).reduce((s,l)=>s+l.delta,0); }
+function isDoneToday(cid,tid){ const t=todayStr();
+  return DB.ledger.some(l=>l.child===cid&&l.taskId===tid&&l.date===t&&l.delta>0); }
+function isDone(cid,tid){
+  const t=findTask(cid,tid); if(!t) return false;
+  if(t.finisable && isFinished(tid)) return true;
+  if(t.freq==='once') return DB.ledger.some(l=>l.child===cid&&l.taskId===tid&&l.delta>0);
+  if(t.freq==='multi') return false; // 可多次：永远可再打卡
+  return isDoneToday(cid,tid);
+}
+function isDoneOn(cid,tid,date){
+  const t=findTask(cid,tid); if(!t) return false;
+  if(t.finisable && isFinished(tid)) return true;
+  if(t.freq==='once') return DB.ledger.some(l=>l.child===cid&&l.taskId===tid&&l.delta>0);
+  if(t.freq==='multi') return false; // 可多次：永远可再打卡
+  return DB.ledger.some(l=>l.child===cid&&l.taskId===tid&&l.date===date&&l.delta>0);
+}
+function isFinished(tid){ return !!DB.finished[tid]; }
+function finishBook(cid,tid,date){
+  if(isFinished(tid)) return;
+  const t=findTask(cid,tid); if(!t) return;
+  const d=date||todayStr();
+  DB.finished[tid]=true;
+  DB.balance[cid]+=50;
+  DB.ledger.push({date:d,wk:weekKey(new Date(d+'T00:00:00')),child:cid,taskId:tid,task:t.name+' · 读完全书奖励',delta:50,note:'读完奖励'});
+  save(); toast(`${childById(cid).name} 读完《${t.name.split('：').pop()}》+50 奖励 🎉`);
+  renderAll();
+}
+function findTask(cid,tid){ return childById(cid).tasks.find(t=>t.id===tid); }
+function doTask(cid,tid,override){
+  const t=findTask(cid,tid); if(isDone(cid,tid)) return;
+  const delta=(override!=null)?override:t.pts;
+  DB.ledger.push({date:todayStr(),wk:weekKey(new Date()),child:cid,taskId:tid,task:t.name,delta:delta,note:'完成'});
+  DB.balance[cid]+=delta; save(); toast(`${childById(cid).name} +${delta} 分 ✅`); renderAll();
+}
+function doTaskOnDate(cid,tid,date,override){
+  const t=findTask(cid,tid); if(!t) return;
+  if(t.freq!=='multi' && isDoneOn(cid,tid,date)) return;
+  const delta=(override!=null)?override:t.pts;
+  DB.ledger.push({date:date,wk:weekKey(new Date(date+'T00:00:00')),child:cid,taskId:tid,task:t.name,delta:delta,note:(date===todayStr()?'完成':'补录')});
+  DB.balance[cid]+=delta; save(); toast(`${childById(cid).name} ${date} +${delta} 分 ✅`); renderAll();
+}
+function undoTask(cid,tid,date){
+  const t=findTask(cid,tid); const t0=date||todayStr();
+  let idx=-1;
+  for(let i=DB.ledger.length-1;i>=0;i--){ const l=DB.ledger[i];
+    if(l.child===cid&&l.taskId===tid&&l.delta>0&&(t&&t.freq==='once'?true:l.date===t0)){ idx=i; break; } }
+  if(idx>=0){ const ent=DB.ledger[idx]; DB.ledger.splice(idx,1); DB.balance[cid]-=ent.delta; save(); toast(`已撤销 ${ent.delta} 分`); renderAll(); }
+}
+function deductTask(cid,tid){
+  const t=findTask(cid,tid);
+  DB.ledger.push({date:todayStr(),wk:weekKey(new Date()),child:cid,taskId:tid,task:t.name,delta:-t.pts,note:'质量不达标扣除'});
+  DB.balance[cid]-=t.pts; save(); toast(`${childById(cid).name} -${t.pts} 分`); renderAll();
+}
+function deductTaskOnDate(cid,tid,date){
+  const t=findTask(cid,tid);
+  DB.ledger.push({date:date,wk:weekKey(new Date(date+'T00:00:00')),child:cid,taskId:tid,task:t.name,delta:-t.pts,note:(date===todayStr()?'质量不达标扣除':'补录扣除')});
+  DB.balance[cid]-=t.pts; save(); toast(`${childById(cid).name} ${date} -${t.pts} 分`); renderAll();
+}
+
+/* ============ 渲染：账本 ============ */
+function renderLedger(){
+  const sel=document.getElementById('ledgerChild').value;
+  const rows=DB.ledger.filter(l=>sel==='all'||l.child===sel)
+    .slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,200);
+  const tb=document.getElementById('ledgerTable');
+  tb.innerHTML=`<tr><th>日期</th><th>孩子</th><th>事项</th><th>变动</th><th>余额</th><th>备注</th></tr>`+
+    rows.map(l=>`<tr><td>${l.date}</td><td>${childById(l.child).emoji}${childById(l.child).name}</td>
+      <td>${l.task}</td><td class="${l.delta>=0?'add':'del'}">${l.delta>=0?'+':''}${l.delta}</td>
+      <td>${DB.balance[l.child]}</td><td class="note">${l.note||''}</td></tr>`).join('');
+}
+
+/* ============ 渲染：商城 ============ */
+function renderStore(){
+  const g=document.getElementById('storeGrid'); g.innerHTML='';
+  STORE.forEach(s=>{
+    g.insertAdjacentHTML('beforeend',`
+      <div class="storeitem">
+        <div class="ic">${s.ic}</div>
+        <div class="info" style="flex:1">
+          <div class="tname" style="font-weight:700">${s.name}</div>
+          <div class="tsub">${s.cost} 分 · ${money(s.cost)}</div>
+        </div>
+        <button class="btn green sm" onclick="redeem('${s.id}')">兑换</button>
+      </div>`);
+  });
+  populateLoanSelects();
+  renderLoans();
+  renderSpendTable();
+}
+function redeem(sid){
+  const s=STORE.find(x=>x.id===sid);
+  // 用当前激活孩子？这里用下拉选择
+  const cid=document.getElementById('spendChild').value||'dajie';
+  if(DB.balance[cid]<s.cost){ toast('积分不足，先去攒分吧 💪'); return; }
+  DB.balance[cid]-=s.cost;
+  DB.ledger.push({date:todayStr(),wk:weekKey(new Date()),child:cid,taskId:'',task:'兑换：'+s.name,delta:-s.cost,note:'商城兑换'});
+  DB.spends.push({date:todayStr(),child:cid,item:s.name,cost:s.cost,type:'store'});
+  save(); toast(`${childById(cid).name} 兑换了 ${s.name} 🎉`); renderAll();
+}
+function renderSpendTable(){
+  const tb=document.getElementById('spendTable');
+  const rows=DB.spends.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  tb.innerHTML=`<tr><th>日期</th><th>孩子</th><th>项目</th><th>扣减积分</th></tr>`+
+    (rows.length?rows.map(s=>`<tr><td>${s.date}</td><td>${childById(s.child).emoji}${childById(s.child).name}</td>
+      <td>${s.item}</td><td class="del">-${s.cost}</td></tr>`).join('')
+    :`<tr><td colspan="4" class="note" style="text-align:center;padding:18px">暂无记录</td></tr>`);
+}
+function doSpend(){
+  const cid=document.getElementById('spendChild').value;
+  const note=document.getElementById('spendNote').value.trim()||'消费';
+  const pts=parseInt(document.getElementById('spendPoints').value||'0',10);
+  if(!pts||pts<=0){ toast('请输入扣减积分'); return; }
+  if(DB.balance[cid]<pts){ toast('积分余额不足'); return; }
+  DB.balance[cid]-=pts;
+  DB.ledger.push({date:todayStr(),wk:weekKey(new Date()),child:cid,taskId:'',task:note,delta:-pts,note:'兑现/消费'});
+  DB.spends.push({date:todayStr(),child:cid,item:note,cost:pts,type:'cash'});
+  document.getElementById('spendNote').value=''; document.getElementById('spendPoints').value='';
+  save(); toast(`${childById(cid).name} 扣除 ${pts} 分`); renderAll();
+}
+
+/* ============ 借贷（兄弟姐妹互助） ============ */
+function populateLoanSelects(){
+  const bf=document.getElementById('borrowerSel'), lt=document.getElementById('lenderSel');
+  if(!bf||!lt) return;
+  bf.innerHTML=''; lt.innerHTML='';
+  CHILDREN.forEach(c=>{ bf.add(new Option(c.emoji+c.name,c.id)); lt.add(new Option(c.emoji+c.name,c.id)); });
+  lt.value='dajie'; // 默认借出方为姐姐 Emily
+}
+function doBorrow(){
+  const b=document.getElementById('borrowerSel').value;
+  const l=document.getElementById('lenderSel').value;
+  const amt=parseInt(document.getElementById('borrowPoints').value||'0',10);
+  if(b===l){ toast('借入方和借出方不能相同'); return; }
+  if(!amt||amt<=0){ toast('请输入积分'); return; }
+  if(DB.balance[l]<amt){ toast(childById(l).name+' 积分不够借出'); return; }
+  DB.balance[l]-=amt; DB.balance[b]+=amt;
+  const d=todayStr(), wk=weekKey(new Date());
+  DB.ledger.push({date:d,wk,child:l,taskId:'',task:'借给'+childById(b).name+' '+amt,delta:-amt,note:'借出'});
+  DB.ledger.push({date:d,wk,child:b,taskId:'',task:'向'+childById(l).name+'借入 '+amt,delta:amt,note:'借入'});
+  DB.loans.push({id:'ln'+Date.now(),borrower:b,lender:l,amount:amt,date:d,repaid:false});
+  document.getElementById('borrowPoints').value='';
+  save(); toast(childById(b).name+' 向 '+childById(l).name+' 借入 '+amt+' 分');
+  renderAll();
+}
+function doRepay(id){
+  const ln=DB.loans.find(x=>x.id===id); if(!ln||ln.repaid) return;
+  const b=ln.borrower, l=ln.lender, a=ln.amount;
+  DB.balance[b]-=a; DB.balance[l]+=a;
+  const d=todayStr(), wk=weekKey(new Date());
+  DB.ledger.push({date:d,wk,child:b,taskId:'',task:'还'+childById(l).name+' '+a,delta:-a,note:'还款'});
+  DB.ledger.push({date:d,wk,child:l,taskId:'',task:childById(b).name+'还款 '+a,delta:a,note:'收款'});
+  ln.repaid=true; ln.repaidDate=d;
+  save(); toast(childById(b).name+' 已还 '+childById(l).name+' '+a+' 分');
+  renderAll();
+}
+function renderLoans(){
+  const tb=document.getElementById('loanTable'); if(!tb) return;
+  const rows=DB.loans.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  tb.innerHTML=`<tr><th>日期</th><th>借入方</th><th>借出方</th><th>金额</th><th>状态</th><th>操作</th></tr>`+
+    (rows.length?rows.map(ln=>`<tr><td>${ln.date}</td>
+      <td>${childById(ln.borrower).emoji}${childById(ln.borrower).name}</td>
+      <td>${childById(ln.lender).emoji}${childById(ln.lender).name}</td>
+      <td><b>${ln.amount}</b></td>
+      <td class="${ln.repaid?'add':'del'}">${ln.repaid?'已还清':'未还'}</td>
+      <td>${ln.repaid?'—':`<button class="btn green sm" onclick="doRepay('${ln.id}')">还债</button>`}</td></tr>`).join('')
+    :`<tr><td colspan="6" class="note" style="text-align:center;padding:16px">暂无借贷记录</td></tr>`);
+}
+
+/* ============ 通用奖惩登记 ============ */
+function populateRewardSelect(){
+  const sel=document.getElementById('rpChild'); if(!sel) return;
+  if(sel.options.length) return;
+  CHILDREN.forEach(c=>sel.add(new Option(c.emoji+c.name,c.id)));
+}
+function doReward(){
+  const cid=document.getElementById('rpChild').value;
+  const key=document.getElementById('rpRule').value;
+  const r=RP_RULES[key]; if(!r) return;
+  const note=document.getElementById('rpNote').value.trim();
+  if((key==='solve'||key==='create') && !note){ toast('请填写具体说明（主动做了什么）'); return; }
+  const d=todayStr(), wk=weekKey(new Date());
+  const taskName='【奖惩】'+r.name+(note?('：'+note):'');
+  DB.ledger.push({date:d,wk,child:cid,taskId:'',task:taskName,delta:r.delta,note:r.delta>=0?'奖励':'扣除'});
+  DB.balance[cid]+=r.delta;
+  document.getElementById('rpNote').value='';
+  save();
+  toast(`${childById(cid).name} ${r.delta>=0?'+':''}${r.delta} 分 ${r.delta>=0?'🎉':'⚠️'}`);
+  renderAll();
+}
+
+/* ============ 制度说明 ============ */
+function renderRules(){
+  document.getElementById('rateInput').value=DB.rate;
+  document.getElementById('rateLabel').textContent=DB.rate.toFixed(2);
+  document.getElementById('ratePreview').textContent=`即 100 分 = ${money(100)}`;
+  document.getElementById('earnTable').innerHTML=
+    `<tr><th>模块</th><th>规则</th><th>说明</th></tr>`+
+    EARN_RULES.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="note">${r[2]}</td></tr>`).join('');
+  document.getElementById('deductTable').innerHTML=
+    `<tr><th>情形</th><th>处理</th><th>说明</th></tr>`+
+    DEDUCT_RULES.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="note">${r[2]}</td></tr>`).join('');
+  document.getElementById('generalTable').innerHTML=
+    `<tr><th>项目</th><th>适用情形</th><th>分值</th></tr>`+
+    GENERAL_RULES.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="note">${r[2]}</td></tr>`).join('');
+}
+function saveRate(){
+  const v=parseFloat(document.getElementById('rateInput').value);
+  if(isNaN(v)||v<=0){ toast('请输入有效比例'); return; }
+  DB.rate=v; save(); renderRules(); renderDash(); renderStore();
+  toast(`已保存：1 积分 = ${v} 元`);
+}
+
+/* ============ 初始化 ============ */
+// 下拉填充
+window.addEventListener('DOMContentLoaded',()=>{
+  const lc=document.getElementById('ledgerChild'), sc=document.getElementById('spendChild');
+  CHILDREN.forEach(c=>{ lc.add(new Option(c.emoji+c.name,c.id)); sc.add(new Option(c.emoji+c.name,c.id)); });
+  // tabs
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active'); document.getElementById(t.dataset.p).classList.add('active');
+  });
+  renderAll();
+  populateRewardSelect();
+  // 自动修复：localStorage 被清时从 IndexedDB 恢复
+  repairFromIDB();
+  // 数据丢失警告
+  if(window.__dataLost){
+    const pb=window.__prevBalance||{};
+    const names={dajie:'Emily',erbao:'Eric',sanbao:'Ella'};
+    const detail=Object.entries(pb).filter(([,v])=>v>0).map(([k,v])=>(names[k]||k)+' '+v+'分').join(' / ');
+    setTimeout(()=>{
+      if(confirm('⚠️ 检测到数据可能被浏览器清空了！\n\n上次余额：'+detail+'\n\n点「确定」从手机本地数据库自动恢复，或点「取消」手动补录。')) {
+        repairFromIDB();
+      }
+    }, 600);
+  }
+  updateSaveStatus();
+  // 自动保存：切后台/锁屏/关闭前强制落盘（三重存储）
+  const forceSave=()=>{ try{ save(); }catch(e){} };
+  window.addEventListener('pagehide', forceSave);
+  window.addEventListener('beforeunload', forceSave);
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') forceSave(); });
+});
+function showInstallHelp(){
+  const el=document.getElementById('installHelp');
+  if(el) el.style.display = (el.style.display==='none'||!el.style.display)?'block':'none';
+}
+function renderAll(){
+  renderDash(); renderPlan(); renderKidTabs(); renderCheckin();
+  renderLedger(); renderStore(); renderRules();
+  // 同步下拉（防止切换后为空）
+}
+function seedDemo(){
+  const wk=weekKey(new Date());
+  const d=todayStr();
+  const add=(cid,tid,task,delta,note,date)=>{
+    if(!findTask(cid,tid)) return;
+    DB.ledger.push({date:date||d,wk,child:cid,taskId:tid,task,delta,note:note||'完成'});
+    DB.balance[cid]+=delta;
+  };
+  add('dajie','d_r1','英文阅读 30min',12,'完成');
+  add('dajie','d_s1','运动（跳绳/骑行 30min）',15,'完成');
+  add('dajie','d_c1','洗碗',10,'完成');
+  add('erbao','e_h1','学校作业（每科完成+检查）',12,'完成');
+  add('erbao','e_r1','英文阅读 30min',12,'完成');
+  add('erbao','e_s1','运动（跳绳/户外 30min）',15,'完成');
+  add('erbao','e_c1','洗碗',10,'完成');
+  add('sanbao','s_r1','英文音频时间 15min',10,'完成');
+  add('sanbao','s_r2','英文阅读（绘本）',10,'完成');
+  add('sanbao','s_r3','中文阅读 / 亲子共读',10,'完成');
+  add('sanbao','s_s1','轻量运动',10,'完成');
+  // 演示一笔借贷：Ella 向 Emily 借 30 分
+  DB.balance['dajie']-=30; DB.balance['sanbao']+=30;
+  DB.ledger.push({date:d,wk,child:'dajie',taskId:'',task:'借给Ella 30',delta:-30,note:'借出'});
+  DB.ledger.push({date:d,wk,child:'sanbao',taskId:'',task:'向Emily借入 30',delta:30,note:'借入'});
+  DB.loans.push({id:'ln_demo1',borrower:'sanbao',lender:'dajie',amount:30,date:d,repaid:false});
+  save(); renderAll();
+}
+function resetAll(){
+  if(!confirm('确定清空全部积分、账本、借贷与奖惩记录，从今天重新算起？')) return;
+  localStorage.removeItem(KEY);
+  location.reload();
+}
+function loadDemo(){
+  if(DB.ledger.length && !confirm('当前已有数据，载入演示将追加示例记录，确定？')) return;
+  seedDemo();
+  toast('已载入演示数据');
+}
+function exportData(){
+  try{
+    const fname='家有小掌柜备份_'+todayStr().replace(/-/g,'')+'_'+String(Date.now()).slice(-4)+'.json';
+    const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=fname;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+    toast('✅ 备份已下载：'+fname+'（请保存到手机相册/文件管理器）');
+    // 同时也存一份到 localStorage 以防万一
+    localStorage.setItem(KEY+'_backup', JSON.stringify(DB));
+  }catch(e){ toast('导出失败：'+e.message); }
+}
+function importData(input){
+  const f=input.files&&input.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const data=JSON.parse(r.result);
+      if(!data||typeof data!=='object'||!data.balance) throw new Error('文件格式不正确');
+      DB=data;
+      if(!Array.isArray(DB.loans)) DB.loans=[];
+      if(!DB.finished||typeof DB.finished!=='object') DB.finished={};
+      if(typeof DB.rate!=='number') DB.rate=0.5;
+      if(!Array.isArray(DB.ledger)) DB.ledger=[];
+      if(!Array.isArray(DB.spends)) DB.spends=[];
+      CHILDREN.forEach(c=>{ if(DB.balance[c.id]===undefined) DB.balance[c.id]=0; });
+      save(); renderAll();
+      toast('已导入备份，数据恢复 ✅');
+    }catch(e){ toast('导入失败：'+e.message); }
+    input.value='';
+  };
+  r.readAsText(f);
+}
+</script>
+</body>
+</html>
