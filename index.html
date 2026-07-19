@@ -6,8 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="家有小掌柜">
-<meta name="theme-color" content="#FFC93C">
-<meta name="msapplication-TileColor" content="#FFC93C">
+<meta name="theme-color" content="#9B59B6">
+<meta name="msapplication-TileColor" content="#9B59B6">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -120,7 +120,13 @@
       <p id="hdrDate" style="margin-top:2px;opacity:.95;font-size:12px"></p>
       <p id="saveStatus" style="margin-top:2px;font-size:11px;color:#5FBF73;font-weight:600"></p>
     </div>
-    <button class="btn sm" id="topSaveBtn" onclick="showInstallHelp()" style="flex-shrink:0;background:var(--sun);color:#2b2b33;border-radius:14px;padding:9px 13px;font-weight:700;font-size:13px;white-space:nowrap;box-shadow:0 3px 12px rgba(255,201,60,.4)">📲 放桌面</button>
+    <div style="flex-shrink:0;display:flex;flex-direction:column;gap:5px">
+      <button class="btn sm" id="topSaveBtn" onclick="showInstallHelp()" style="background:var(--sun);color:#2b2b33;border-radius:14px;padding:9px 13px;font-weight:700;font-size:13px;white-space:nowrap;box-shadow:0 3px 12px rgba(255,201,60,.4)">📲 放桌面</button>
+      <div style="display:flex;gap:4px">
+        <button class="btn ghost sm" onclick="exportData()" style="padding:5px 8px;font-size:11px;border-radius:10px" title="导出当前所有数据为 JSON 文件">📥 备份</button>
+        <button class="btn ghost sm" onclick="hardRefresh()" style="padding:5px 8px;font-size:11px;border-radius:10px" title="清缓存刷新（数据不丢）">🔄 刷新</button>
+      </div>
+    </div>
   </div>
   <div id="installHelp" style="display:none;margin-top:6px;padding:8px 12px;background:#fff7e6;border-radius:10px;font-size:12px;color:#8a6d3b;line-height:1.6">
     📱 <b>一次性设置，以后点桌面图标即用：</b><br>
@@ -992,6 +998,16 @@ function loadDemo(){
   if(DB.ledger.length && !confirm('当前已有数据，载入演示将追加示例记录，确定？')) return;
   seedDemo();
   toast('已载入演示数据');
+}
+function hardRefresh(){
+  if(!confirm('清缓存并重新加载？（数据不丢）\n\n提示：当你看到的内容明显不是最新版时，点此按钮。')) return;
+  // 先强制保存
+  try{ save(); }catch(e){}
+  // 清除 HTML/JS/CSS 缓存：给 URL 加时间戳后重载
+  const u = new URL(location.href);
+  // 移除所有 query 参数再加时间戳，避免 localStorage 被换地址
+  u.search = '?fresh=' + Date.now();
+  location.replace(u.toString());
 }
 function exportData(){
   try{
