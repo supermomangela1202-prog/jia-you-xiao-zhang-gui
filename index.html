@@ -565,6 +565,7 @@ function fmtDateTime(iso){ if(!iso) return '-'; const d=new Date(iso); const p=n
 /* ============ 工具 ============ */
 function todayStr(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); }
 function weekKey(d){ const dt=new Date(d); const day=(dt.getDay()+6)%7; dt.setDate(dt.getDate()-day); const p=n=>String(n).padStart(2,'0'); return dt.getFullYear()+'-'+p(dt.getMonth()+1)+'-'+p(dt.getDate()); }
+function childById(id){ return CHILDREN.find(c=>c.id===id); }
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
   clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),1800); }
 function money(pts){ return '¥'+(pts*DB.rate).toFixed(2); }
