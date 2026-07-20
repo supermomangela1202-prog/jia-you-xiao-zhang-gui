@@ -615,18 +615,47 @@ function renderDash(){
       <span><b style="color:${r.c.color}">${r.wkPts}</b> 分本周 · 进度 ${r.pct}%</span></div>`).join('')
     + `<div class="note">进度满 100% = 本周完成度达标，可额外奖励 20 分（家长判定）。</div>`;
 
-  // today reminders by category
+  // today reminders by category —— 按学科主题分组，默认收起
   const tc=document.getElementById('todayCards'); tc.innerHTML='';
+  const CAT_ICONS={home:'📝',read:'📚',sport:'🏃',video:'🎬',chore:'🧹'};
+  const CAT_COLORS={home:'#F2994A',read:'#2E86AB',sport:'#5FBF73',video:'#9B6BFF',chore:'#B08968'};
   Object.keys(CATS).forEach(catKey=>{
     const items=[];
-    CHILDREN.forEach(c=>c.tasks.filter(t=>(t.freq==='每日'||t.freq==='multi')&&!(t.finisable&&isFinished(t.id)))
-      .forEach(t=>items.push(`${c.emoji}${c.name}：${t.name.split('（')[0]}`)));
+    CHILDREN.forEach(c=>{
+      c.tasks
+        .filter(t=>t.cat===catKey && (t.freq==='每日'||t.freq==='multi') && !(t.finisable&&isFinished(t.id)))
+        .forEach(t=>{
+          const done = t.freq==='multi' ? false : isDone(c.id,t.id);
+          items.push({child:c, task:t, done});
+        });
+    });
     if(!items.length) return;
+    const doneCnt = items.filter(i=>i.done).length;
+    const total = items.length;
+    const pct = total ? Math.round(doneCnt/total*100) : 0;
+    const catName=CATS[catKey].name;
+    const icon=CAT_ICONS[catKey]||'📌';
+    const catColor=CAT_COLORS[catKey]||'#888';
     tc.insertAdjacentHTML('beforeend',`
-      <div class="card">
-        <span class="cat ${CATS[catKey].cls}">${CATS[catKey].name}</span>
-        <ul style="padding-left:18px;margin-top:10px;font-size:13.5px">${items.map(i=>`<li>${i}</li>`).join('')}</ul>
-      </div>`);
+      <details class="card cat-group" style="padding:0;overflow:hidden;margin-bottom:12px">
+        <summary style="list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;-webkit-tap-highlight-color:transparent">
+          <span style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:18px">${icon}</span>
+            <b style="font-size:15px">${catName}</b>
+            <span class="cat ${CATS[catKey].cls}" style="margin-left:4px">${total} 项</span>
+          </span>
+          <span style="display:flex;align-items:center;gap:8px;font-size:13px">
+            <span class="muted">${doneCnt}/${total}</span>
+            <span style="display:inline-block;width:48px;height:6px;background:#eee;border-radius:3px;overflow:hidden">
+              <span style="display:block;height:100%;width:${pct}%;background:${catColor}"></span>
+            </span>
+            <span style="font-size:11px;color:#999">▾</span>
+          </span>
+        </summary>
+        <ul style="padding:0 16px 14px 34px;margin:0;font-size:13.5px;line-height:1.9">
+          ${items.map(i=>`<li style="${i.done?'opacity:.5;text-decoration:line-through':''}">${i.child.emoji}${i.child.name}：${i.task.name.split('（')[0]}${i.done?' ✓':''}</li>`).join('')}
+        </ul>
+      </details>`);
   });
 }
 
